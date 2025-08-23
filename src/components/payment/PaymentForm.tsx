@@ -4,7 +4,15 @@ import { useState, useEffect } from 'react';
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi';
 import { parseEther } from 'viem';
 import { toast } from 'sonner';
-import { Send, Loader2, AlertCircle, CheckCircle, Coffee, Zap, Heart } from 'lucide-react';
+import { 
+  PaperPlaneTilt, 
+  CircleNotch, 
+  Warning, 
+  CheckCircle, 
+  Coffee, 
+  Lightning, 
+  Heart 
+} from '@phosphor-icons/react';
 import { DEFAULT_PAYMENT_AMOUNTS, TX_STATUS, DEFAULT_NETWORK } from '@/lib/sei/config';
 import { formatAddress, formatSei, isValidSeiAddress, cn } from '@/lib/utils';
 
@@ -196,9 +204,9 @@ export function PaymentForm({
                 )}
               >
                 <div className="text-lg mb-1">
-                  {preset.label.includes('Coffee') && <Coffee className="w-5 h-5 mx-auto" />}
-                  {preset.label.includes('Premium') && <Zap className="w-5 h-5 mx-auto" />}
-                  {preset.label.includes('Supporter') && <Heart className="w-5 h-5 mx-auto" />}
+                  {preset.label.includes('Coffee') && <Coffee weight="regular" size={20} className="mx-auto" />}
+                  {preset.label.includes('Premium') && <Lightning weight="regular" size={20} className="mx-auto" />}
+                  {preset.label.includes('Supporter') && <Heart weight="regular" size={20} className="mx-auto" />}
                   {!preset.label.includes('Coffee') && !preset.label.includes('Premium') && !preset.label.includes('Supporter') && preset.label.split(' ')[1]}
                 </div>
                 <div className="text-xs font-medium">{preset.value} SEI</div>
@@ -241,10 +249,10 @@ export function PaymentForm({
             txStatus === TX_STATUS.FAILED ? "bg-red-500/10 text-red-500" :
             "bg-primary/10 text-primary"
           )}>
-            {txStatus === TX_STATUS.CONFIRMING && <Loader2 className="h-5 w-5 animate-spin mt-0.5" />}
-            {txStatus === TX_STATUS.PENDING && <Loader2 className="h-5 w-5 animate-spin mt-0.5" />}
-            {isSuccess && <CheckCircle className="h-5 w-5 mt-0.5" />}
-            {txStatus === TX_STATUS.FAILED && <AlertCircle className="h-5 w-5 mt-0.5" />}
+            {txStatus === TX_STATUS.CONFIRMING && <CircleNotch weight="regular" size={20} className="animate-spin mt-0.5" />}
+            {txStatus === TX_STATUS.PENDING && <CircleNotch weight="regular" size={20} className="animate-spin mt-0.5" />}
+            {isSuccess && <CheckCircle weight="fill" size={20} className="mt-0.5" />}
+            {txStatus === TX_STATUS.FAILED && <Warning weight="fill" size={20} className="mt-0.5" />}
             
             <div className="flex-1">
               <div className="font-medium">
@@ -282,17 +290,17 @@ export function PaymentForm({
         >
           {isLoading ? (
             <>
-              <Loader2 className="h-5 w-5 animate-spin" />
+              <CircleNotch weight="regular" size={20} className="animate-spin" />
               <span>Processing...</span>
             </>
           ) : isSuccess ? (
             <>
-              <CheckCircle className="h-5 w-5" />
+              <CheckCircle weight="fill" size={20} />
               <span>Payment Sent!</span>
             </>
           ) : (
             <>
-              <Send className="h-5 w-5" />
+              <PaperPlaneTilt weight="regular" size={20} />
               <span>Send Payment</span>
             </>
           )}
