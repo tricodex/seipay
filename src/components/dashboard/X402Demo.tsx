@@ -9,10 +9,13 @@ import {
   Warning,
   ArrowRight,
   Cpu,
-  CurrencyCircleDollar
+  CurrencyCircleDollar,
+  TestTube,
+  Drop
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { isTestnet, TESTNET_RESOURCES } from '@/lib/x402/config';
 
 export function X402Demo() {
   const { address, isConnected } = useAccount();
@@ -92,11 +95,48 @@ export function X402Demo() {
 
   return (
     <div className="space-y-6">
+      {/* Testnet Warning */}
+      {isTestnet() && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div className="flex items-start gap-3">
+            <TestTube weight="duotone" size={20} className="text-blue-600 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-blue-900 mb-2">
+                Sei Atlantic-2 Testnet Mode
+              </p>
+              <div className="space-y-2 text-sm text-blue-800">
+                <p>You're on testnet - perfect for testing x402 payments!</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <a 
+                    href={TESTNET_RESOURCES.seiFaucet}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors"
+                  >
+                    <Drop size={16} weight="duotone" />
+                    Get Test SEI
+                  </a>
+                  <a 
+                    href={TESTNET_RESOURCES.usdcBridge}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors"
+                  >
+                    <CurrencyCircleDollar size={16} weight="duotone" />
+                    Get Test USDC
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Live Demo Section */}
       <div className="bg-white rounded-xl border border-border p-6">
         <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
           <Cpu weight="duotone" size={24} className="text-primary" />
-          Live x402 Demo
+          Live x402 Demo {isTestnet() && <span className="text-sm font-normal text-muted-foreground">(Testnet)</span>}
         </h3>
 
         <div className="space-y-4">

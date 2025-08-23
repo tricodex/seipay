@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { x402Middleware } from 'x402-next';
+import { 
+  generatePaymentRequirements, 
+  X402_CONFIG,
+  getCurrentX402Config,
+  isTestnet,
+} from '@/lib/x402/config';
 
 // This is a test API endpoint that requires payment via x402
 export async function GET(req: NextRequest) {
+  // Get network-specific configuration
+  const networkConfig = getCurrentX402Config();
+  
   // Configure x402 payment requirements
   const paymentConfig = {
-    amount: '0.001', // 0.001 USDC
-    currency: 'USDC',
-    network: 'sei',
+    amount: X402_CONFIG.paymentPresets.api_call, // 0.001 USDC
     recipient: process.env.NEXT_PUBLIC_PAYMENT_ADDRESS || '0x0000000000000000000000000000000000000000',
-    facilitator: 'https://api.x402.org/validate', // Coinbase's x402 facilitator
   };
 
   // Check for payment header
@@ -17,22 +23,27 @@ export async function GET(req: NextRequest) {
   
   if (!paymentHeader) {
     // No payment provided - return 402 Payment Required
+    const requirements = generatePaymentRequirements(
+      paymentConfig.amount,
+      paymentConfig.recipient
+    );
+    
     return NextResponse.json(
       {
-        x402Version: '1.0',
-        accepts: [{
-          type: 'evm-transfer',
-          currency: paymentConfig.currency,
-          network: paymentConfig.network,
-          amount: paymentConfig.amount,
-          recipient: paymentConfig.recipient,
-        }],
-        message: 'Payment required to access this API'
+        ...requirements,
+        message: 'Payment required to access this API',
+        testnet: isTestnet() ? {
+          warning: 'Using Sei Atlantic-2 Testnet',
+          usdcFaucet: 'https://testnet.circle.com/faucets/usdc',
+          seiFaucet: 'https://atlantic-2.app.sei.io/faucet',
+        } : undefined,
       },
       { 
         status: 402,
         headers: {
           'Content-Type': 'application/json',
+          'X-Payment-Network': networkConfig.network,
+          'X-Payment-Chain-Id': networkConfig.chainId.toString(),
         }
       }
     );
@@ -45,39 +56,50 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     success: true,
     message: 'Payment received! Here is your premium content.',
+    network: networkConfig.network,
     data: {
       secret: 'This is the premium API response',
       timestamp: new Date().toISOString(),
       paidAmount: paymentConfig.amount,
+      currency: 'USDC',
+      network: isTestnet() ? 'Sei Atlantic-2 Testnet' : 'Sei Mainnet',
     }
   });
 }
 
 export async function POST(req: NextRequest) {
   // Example of a paid API endpoint that generates AI content
+  const networkConfig = getCurrentX402Config();
+  
   const paymentConfig = {
-    amount: '0.005', // 0.005 USDC for AI generation
-    currency: 'USDC',
-    network: 'sei',
+    amount: X402_CONFIG.paymentPresets.ai_generation, // 0.005 USDC for AI generation
     recipient: process.env.NEXT_PUBLIC_PAYMENT_ADDRESS || '0x0000000000000000000000000000000000000000',
   };
 
   const paymentHeader = req.headers.get('X-PAYMENT');
   
   if (!paymentHeader) {
+    const requirements = generatePaymentRequirements(
+      paymentConfig.amount,
+      paymentConfig.recipient
+    );
+    
     return NextResponse.json(
       {
-        x402Version: '1.0',
-        accepts: [{
-          type: 'evm-transfer',
-          currency: paymentConfig.currency,
-          network: paymentConfig.network,
-          amount: paymentConfig.amount,
-          recipient: paymentConfig.recipient,
-        }],
-        message: 'Payment required for AI generation'
+        ...requirements,
+        message: 'Payment required for AI generation',
+        testnet: isTestnet() ? {
+          warning: 'Using Sei Atlantic-2 Testnet',
+          info: 'Test payments only - no real value',
+        } : undefined,
       },
-      { status: 402 }
+      { 
+        status: 402,
+        headers: {
+          'X-Payment-Network': networkConfig.network,
+          'X-Payment-Chain-Id': networkConfig.chainId.toString(),
+        }
+      }
     );
   }
 
