@@ -138,16 +138,16 @@ export default function Home() {
                     </button>
                   </div>
 
-                  {/* Tab Content */}
-                  <div className="p-6">
+                  {/* Tab Content - Fixed height container */}
+                  <div className="p-6 min-h-[420px]">
                     {activeTab === 'send' ? (
                       <PaymentForm showRecipientInput />
                     ) : (
-                      <div>
+                      <div className="h-full flex flex-col justify-center">
                         {address ? (
                           <PaymentQR address={address} recipientName="Your Wallet" />
                         ) : (
-                          <div className="text-center py-12 space-y-4">
+                          <div className="text-center space-y-4">
                             <Wallet weight="light" size={48} className="mx-auto text-muted-foreground" />
                             <div>
                               <p className="text-muted-foreground mb-4">
