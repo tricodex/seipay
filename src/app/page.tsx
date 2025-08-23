@@ -15,7 +15,7 @@ import {
   QrCode, 
   PaperPlaneTilt, 
   Users,
-  CircleWavyCheck
+  CheckCircle
 } from '@phosphor-icons/react';
 import { useAccount } from 'wagmi';
 import PaymentAnimation from '../../public/Payment.json';
@@ -232,19 +232,19 @@ export default function Home() {
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3">
                     <div className="w-6 h-6 rounded-full gradient-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CircleWavyCheck weight="fill" size={16} className="text-primary-foreground" />
+                      <CheckCircle weight="fill" size={16} className="text-primary-foreground" />
                     </div>
                     <span>No international transfer fees</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-6 h-6 rounded-full gradient-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CircleWavyCheck weight="fill" size={16} className="text-primary-foreground" />
+                      <CheckCircle weight="fill" size={16} className="text-primary-foreground" />
                     </div>
                     <span>24/7 availability, even on holidays</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-6 h-6 rounded-full gradient-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CircleWavyCheck weight="fill" size={16} className="text-primary-foreground" />
+                      <CheckCircle weight="fill" size={16} className="text-primary-foreground" />
                     </div>
                     <span>Transparent blockchain verification</span>
                   </li>
