@@ -209,8 +209,7 @@ export function PaymentForm({
                   {preset.label.includes('Generous') && <Gift weight="duotone" size={24} className="text-primary" />}
                   {preset.label.includes('Supporter') && <Heart weight="duotone" size={24} className="text-primary" />}
                 </div>
-                <div className="text-xs font-medium">{preset.value} SEI</div>
-                <div className="text-xs text-muted-foreground">{preset.usd}</div>
+                <div className="text-sm font-semibold">{preset.value} SEI</div>
               </button>
             ))}
           </div>
