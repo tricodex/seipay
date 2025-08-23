@@ -1,146 +1,192 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '@/components/layout/Header';
 import { PaymentForm } from '@/components/payment/PaymentForm';
 import { PaymentQR } from '@/components/payment/PaymentQR';
-import { LottieAnimation } from '@/components/animations/LottieAnimation';
 import { 
   ArrowRight, 
   Lightning, 
   Shield, 
   Globe, 
   QrCode, 
-  PaperPlaneTilt, 
-  Users,
-  CheckCircle
+  PaperPlaneTilt,
+  CheckCircle,
+  Wallet,
+  Clock,
+  ShieldCheck
 } from '@phosphor-icons/react';
 import { useAccount } from 'wagmi';
-import PaymentAnimation from '../../public/Payment.json';
-import WorldmapAnimation from '../../public/Worldmap.json';
 
 export default function Home() {
   const { address } = useAccount();
   const [activeTab, setActiveTab] = useState<'send' | 'receive'>('send');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const features = [
     {
       icon: Lightning,
-      title: 'Lightning Fast',
-      description: 'Instant payments with 400ms finality on Sei Network',
+      title: '400ms Finality',
+      description: 'Lightning-fast transactions with near-instant confirmation',
     },
     {
-      icon: Shield,
-      title: 'Secure & Safe',
-      description: 'Built on Sei\'s high-performance blockchain',
+      icon: ShieldCheck,
+      title: 'Secure & Reliable',
+      description: 'Built on Sei Network\'s battle-tested infrastructure',
     },
     {
       icon: Globe,
-      title: 'Global Reach',
-      description: 'Send payments anywhere in the world instantly',
+      title: 'Global Payments',
+      description: 'Send money anywhere in the world, 24/7',
     },
+    {
+      icon: Wallet,
+      title: 'Multi-Wallet Support',
+      description: 'Works with MetaMask, Coinbase, and more',
+    },
+  ];
+
+  const benefits = [
+    { icon: CheckCircle, text: 'No international transfer fees' },
+    { icon: CheckCircle, text: '24/7 availability, even on holidays' },
+    { icon: CheckCircle, text: 'Transparent blockchain verification' },
+    { icon: CheckCircle, text: 'Instant settlement, no waiting' },
   ];
 
   return (
     <>
       <Header />
-      <main className="min-h-screen">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden pt-24 pb-12 lg:pt-32 lg:pb-20">
-          <div className="container">
+      <main className="min-h-screen bg-gradient-to-b from-white via-orange-50/20 to-white">
+        {/* Hero Section with Payment Form */}
+        <section className="relative pt-24 pb-16 overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+          
+          <div className="container-fluid relative">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               {/* Left Content */}
               <div className="space-y-8">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                  </span>
-                  <span className="text-sm font-medium">Now Live on Sei Network</span>
-                </div>
-
                 <div className="space-y-4">
-                  <h1 className="text-4xl lg:text-6xl font-bold tracking-tight">
-                    <span className="gradient-text">
-                      Instant Payments
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 border border-orange-200">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
                     </span>
-                    <br />
-                    <span>Made Simple</span>
+                    <span className="text-sm font-medium text-orange-900">Live on Sei Network</span>
+                  </div>
+                  
+                  <h1 className="text-5xl lg:text-7xl font-bold tracking-tight">
+                    Send Money
+                    <span className="block gradient-text">Instantly</span>
                   </h1>
                   
-                  <p className="text-lg lg:text-xl text-muted-foreground max-w-xl">
-                    Send and receive payments globally with SeiPay. 
-                    Fast, secure, and powered by Sei Network's blazing speed.
+                  <p className="text-xl text-muted-foreground max-w-xl">
+                    The fastest way to send and receive payments on Sei Network. 
+                    No banks, no delays, just instant transfers.
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link
-                    href="/send"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl gradient-primary text-primary-foreground font-semibold hover:shadow-lg hover:scale-105 transition-all"
-                  >
-                    Start Sending
-                    <ArrowRight weight="bold" size={16} />
-                  </Link>
-                  <Link
-                    href="/about"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-card border border-border hover:border-primary hover:bg-card/80 transition-all font-medium"
-                  >
-                    Learn More
-                  </Link>
+                <div className="flex flex-wrap gap-6">
+                  <div className="flex items-center gap-2">
+                    <Clock weight="duotone" size={24} className="text-primary" />
+                    <span className="font-medium">< 1 sec transfers</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck weight="duotone" size={24} className="text-primary" />
+                    <span className="font-medium">Bank-grade security</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Globe weight="duotone" size={24} className="text-primary" />
+                    <span className="font-medium">Global reach</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Right Animation */}
-              <div className="relative hidden lg:block">
-                <div className="absolute inset-0 gradient-primary opacity-20 blur-3xl" />
-                <div className="relative">
-                  {mounted && (
-                    <LottieAnimation
-                      animationData={PaymentAnimation}
-                      className="w-full max-w-lg mx-auto"
-                      loop
-                      autoplay
-                    />
-                  )}
+              {/* Right Payment Card */}
+              <div className="lg:pl-8">
+                <div className="bg-white rounded-2xl shadow-2xl border border-border overflow-hidden">
+                  {/* Tab Selector */}
+                  <div className="flex border-b border-border">
+                    <button
+                      onClick={() => setActiveTab('send')}
+                      className={`flex-1 px-6 py-4 font-medium transition-all flex items-center justify-center gap-2 ${
+                        activeTab === 'send'
+                          ? 'bg-orange-50 text-primary border-b-2 border-primary'
+                          : 'text-muted-foreground hover:bg-muted/50'
+                      }`}
+                    >
+                      <PaperPlaneTilt weight="regular" size={20} />
+                      Send Payment
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('receive')}
+                      className={`flex-1 px-6 py-4 font-medium transition-all flex items-center justify-center gap-2 ${
+                        activeTab === 'receive'
+                          ? 'bg-orange-50 text-primary border-b-2 border-primary'
+                          : 'text-muted-foreground hover:bg-muted/50'
+                      }`}
+                    >
+                      <QrCode weight="regular" size={20} />
+                      Receive Payment
+                    </button>
+                  </div>
+
+                  {/* Tab Content */}
+                  <div className="p-6">
+                    {activeTab === 'send' ? (
+                      <PaymentForm showRecipientInput />
+                    ) : (
+                      <div>
+                        {address ? (
+                          <PaymentQR address={address} recipientName="Your Wallet" />
+                        ) : (
+                          <div className="text-center py-12 space-y-4">
+                            <Wallet weight="light" size={48} className="mx-auto text-muted-foreground" />
+                            <div>
+                              <p className="text-muted-foreground mb-4">
+                                Connect your wallet to generate a payment QR code
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                Your address will be displayed here for others to send you payments
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="py-20 bg-muted/30">
-          <div className="container">
+        {/* Features Grid */}
+        <section className="py-20 bg-white">
+          <div className="container-fluid">
             <div className="text-center mb-12 space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold">
-                Why Choose SeiPay?
+              <h2 className="text-4xl font-bold">
+                Why businesses choose SeiPay
               </h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Experience the future of payments with cutting-edge blockchain technology
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Join thousands of merchants accepting instant payments with zero fees
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
                   <div
                     key={index}
-                    className="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 hover:shadow-lg transition-all"
+                    className="group p-6 rounded-xl bg-white border border-border hover:border-primary/50 hover:shadow-lg transition-all"
                   >
-                    <div className="w-14 h-14 rounded-xl gradient-primary flex items-center justify-center mb-6">
-                      <Icon weight="bold" size={24} className="text-primary-foreground" />
+                    <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mb-4">
+                      <Icon weight="bold" size={24} className="text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                    <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                    <p className="text-muted-foreground text-sm">{feature.description}</p>
                   </div>
                 );
               })}
@@ -148,149 +194,98 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Payment Section */}
-        <section className="py-20">
-          <div className="container">
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-12 space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold">
-                  Get Started Now
-                </h2>
-                <p className="text-muted-foreground">
-                  Connect your wallet and start transacting
-                </p>
-              </div>
-
-              {/* Tab Selector */}
-              <div className="flex justify-center mb-8">
-                <div className="inline-flex rounded-xl bg-muted p-1">
-                  <button
-                    onClick={() => setActiveTab('send')}
-                    className={`px-6 py-2.5 rounded-lg font-medium transition-all flex items-center gap-2 ${
-                      activeTab === 'send'
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    <PaperPlaneTilt weight="regular" size={18} />
-                    Send Payment
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('receive')}
-                    className={`px-6 py-2.5 rounded-lg font-medium transition-all flex items-center gap-2 ${
-                      activeTab === 'receive'
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    <QrCode weight="regular" size={18} />
-                    Receive Payment
-                  </button>
-                </div>
-              </div>
-
-              {/* Tab Content */}
-              <div className="bg-card rounded-2xl border border-border p-8">
-                {activeTab === 'send' ? (
-                  <PaymentForm showRecipientInput />
-                ) : (
-                  <div>
-                    {address ? (
-                      <PaymentQR address={address} recipientName="Your Wallet" />
-                    ) : (
-                      <div className="text-center py-12 space-y-4">
-                        <Users weight="light" size={48} className="mx-auto text-muted-foreground" />
-                        <p className="text-muted-foreground">
-                          Connect your wallet to generate a payment QR code
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Global Reach Section */}
-        <section className="py-20 bg-muted/30">
-          <div className="container">
+        {/* Benefits Section */}
+        <section className="py-20 bg-gradient-to-r from-orange-50 to-red-50">
+          <div className="container-fluid">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <h2 className="text-3xl lg:text-4xl font-bold">
-                  Send Money
-                  <span className="gradient-text">
-                    {' '}Anywhere, Anytime
-                  </span>
+              <div>
+                <h2 className="text-4xl font-bold mb-6">
+                  The future of payments is here
                 </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  With SeiPay, geographical boundaries don't exist. Send payments to anyone,
-                  anywhere in the world, instantly. Our global network ensures your money
-                  reaches its destination in seconds, not days.
+                <p className="text-xl text-muted-foreground mb-8">
+                  Say goodbye to wire transfers, ACH delays, and international fees. 
+                  With SeiPay, your money moves at the speed of the internet.
                 </p>
                 <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full gradient-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle weight="fill" size={16} className="text-primary-foreground" />
-                    </div>
-                    <span>No international transfer fees</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full gradient-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle weight="fill" size={16} className="text-primary-foreground" />
-                    </div>
-                    <span>24/7 availability, even on holidays</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full gradient-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle weight="fill" size={16} className="text-primary-foreground" />
-                    </div>
-                    <span>Transparent blockchain verification</span>
-                  </li>
+                  {benefits.map((benefit, index) => {
+                    const Icon = benefit.icon;
+                    return (
+                      <li key={index} className="flex items-center gap-3">
+                        <Icon weight="fill" size={24} className="text-success flex-shrink-0" />
+                        <span className="text-lg">{benefit.text}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
+                <div className="mt-8">
+                  <Link
+                    href="/send"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl gradient-primary text-white font-semibold hover:shadow-lg hover:scale-105 transition-all"
+                  >
+                    Start Sending Now
+                    <ArrowRight weight="bold" size={20} />
+                  </Link>
+                </div>
               </div>
               
               <div className="relative">
-                {mounted && (
-                  <LottieAnimation
-                    animationData={WorldmapAnimation}
-                    className="w-full"
-                    loop
-                    autoplay
-                  />
-                )}
+                <div className="bg-white rounded-2xl shadow-xl p-8 border border-border">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Traditional Bank Transfer</span>
+                      <span className="font-semibold text-red-600">3-5 days</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Wire Transfer</span>
+                      <span className="font-semibold text-orange-600">1-2 days</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Credit Card</span>
+                      <span className="font-semibold text-yellow-600">Instant + 3% fee</span>
+                    </div>
+                    <div className="border-t-2 border-primary pt-6">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-primary">SeiPay</span>
+                        <span className="font-bold text-success">< 1 second, 0% fee</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="py-20">
-          <div className="container">
-            <div className="max-w-4xl mx-auto text-center space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold">
-                  Ready to Experience the Future?
-                </h2>
-                <p className="text-xl text-muted-foreground">
-                  Join thousands of users already using SeiPay for instant, secure payments
-                </p>
-              </div>
-              
+        <section className="py-20 bg-gradient-to-r from-primary to-accent">
+          <div className="container text-center text-white">
+            <h2 className="text-4xl font-bold mb-4">
+              Ready to accept instant payments?
+            </h2>
+            <p className="text-xl mb-8 opacity-90">
+              Join the payment revolution. No setup fees, no monthly charges.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/send"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl gradient-primary text-primary-foreground font-semibold text-lg hover:shadow-xl hover:scale-105 transition-all"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white text-primary font-semibold hover:shadow-xl hover:scale-105 transition-all"
               >
-                Get Started Now
+                Get Started
                 <ArrowRight weight="bold" size={20} />
+              </Link>
+              <Link
+                href="/about"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white/20 text-white border-2 border-white/50 font-semibold hover:bg-white/30 transition-all"
+              >
+                Learn More
               </Link>
             </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="py-12 border-t border-border">
-          <div className="container">
+        <footer className="py-12 bg-gray-50 border-t border-border">
+          <div className="container-fluid">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-3">
                 <Image
@@ -308,6 +303,12 @@ export default function Home() {
                 <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   About
                 </Link>
+                <Link href="/send" className="text-muted-foreground hover:text-primary transition-colors">
+                  Send
+                </Link>
+                <Link href="/receive" className="text-muted-foreground hover:text-primary transition-colors">
+                  Receive
+                </Link>
                 <a
                   href="https://docs.sei.io"
                   target="_blank"
@@ -315,14 +316,6 @@ export default function Home() {
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Docs
-                </a>
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  GitHub
                 </a>
               </div>
             </div>
