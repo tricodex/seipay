@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Header } from '@/components/layout/Header';
 import { PaymentForm } from '@/components/payment/PaymentForm';
 import { PaymentQR } from '@/components/payment/PaymentQR';
+import { WorldMapAnimation } from '@/components/animations/WorldMapAnimation';
 import { 
   ArrowRight, 
   Lightning, 
@@ -85,6 +86,11 @@ export default function Home() {
                     The fastest way to send and receive payments on Sei Network. 
                     No banks, no delays, just instant transfers.
                   </p>
+                </div>
+
+                {/* World Map Animation */}
+                <div className="my-8">
+                  <WorldMapAnimation />
                 </div>
 
                 <div className="flex flex-wrap gap-6">
