@@ -2,17 +2,19 @@
 
 import { useState } from 'react';
 import { 
-  Robot, 
-  Building, 
+  Aperture, 
+  Buildings, 
   Users, 
-  Code, 
+  HardDrive, 
   Warning,
-  Lightning,
+  Pulse,
   CheckCircle,
   XCircle,
   Info,
   ArrowRight,
-  User
+  UserCircle,
+  MagicWand,
+  Cpu
 } from '@phosphor-icons/react';
 import { PaymentAgent } from './PaymentAgent';
 import { UsernameManager } from './UsernameManager';
@@ -29,7 +31,7 @@ export function DashboardContent({ address }: DashboardContentProps) {
   const features = [
     {
       id: 'profile',
-      icon: User,
+      icon: UserCircle,
       title: 'Profile & Username',
       description: 'Manage your unique username',
       status: 'available',
@@ -37,7 +39,7 @@ export function DashboardContent({ address }: DashboardContentProps) {
     },
     {
       id: 'agent',
-      icon: Robot,
+      icon: Aperture,
       title: 'AI Payment Assistant',
       description: 'Chat-based payment assistance',
       status: 'available',
@@ -45,7 +47,7 @@ export function DashboardContent({ address }: DashboardContentProps) {
     },
     {
       id: 'b2b',
-      icon: Building,
+      icon: Buildings,
       title: 'B2B Payments',
       description: 'Enterprise payment solutions',
       status: 'coming-soon',
@@ -53,7 +55,7 @@ export function DashboardContent({ address }: DashboardContentProps) {
     },
     {
       id: 'api',
-      icon: Code,
+      icon: HardDrive,
       title: 'x402 API Payments',
       description: 'Micropayments for APIs',
       status: 'available',

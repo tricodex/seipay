@@ -3,15 +3,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { 
   PaperPlaneTilt, 
-  Robot, 
+  Aperture, 
   User, 
-  Sparkle,
+  MagicWand,
   Copy,
   CheckCircle,
   ArrowsClockwise,
-  Lightning,
+  Pulse,
   Wallet,
-  CurrencyCircleDollar
+  CurrencyCircleDollar,
+  Cpu,
+  Atom
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -43,9 +45,9 @@ const EXAMPLE_PROMPTS = [
 ];
 
 const CAPABILITIES = [
-  { icon: Lightning, label: "Instant Transfers", description: "Send SEI in under 1 second" },
+  { icon: Pulse, label: "Instant Transfers", description: "Send SEI in under 1 second" },
   { icon: Wallet, label: "Balance Checks", description: "View wallet balances and history" },
-  { icon: CurrencyCircleDollar, label: "Smart Payments", description: "Split bills and batch transfers" },
+  { icon: Atom, label: "Smart Payments", description: "Split bills and batch transfers" },
 ];
 
 export function PaymentAgent({ address }: PaymentAgentProps) {
@@ -206,7 +208,7 @@ export function PaymentAgent({ address }: PaymentAgentProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-              <Robot weight="duotone" size={24} className="text-white" />
+              <Aperture weight="duotone" size={24} className="text-white" />
             </div>
             <div>
               <h2 className="text-xl font-bold">AI Payment Assistant</h2>
@@ -258,9 +260,9 @@ export function PaymentAgent({ address }: PaymentAgentProps) {
               {message.role === 'user' ? (
                 <User weight="bold" size={16} />
               ) : message.role === 'assistant' ? (
-                <Sparkle weight="fill" size={16} />
+                <MagicWand weight="fill" size={16} />
               ) : (
-                <Robot weight="duotone" size={16} />
+                <Cpu weight="duotone" size={16} />
               )}
             </div>
 

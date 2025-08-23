@@ -7,7 +7,7 @@ import { api } from '../../../convex/_generated/api';
 import { 
   Code, 
   Key, 
-  Lightning, 
+  Circuitry, 
   Copy, 
   Trash, 
   Plus,
@@ -15,7 +15,9 @@ import {
   Warning,
   Info,
   Globe,
-  ArrowRight
+  ArrowRight,
+  Cpu,
+  HardDrive
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -79,7 +81,7 @@ export function X402ApiPanel() {
       {/* Introduction */}
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-200">
         <div className="flex items-start gap-3">
-          <Lightning weight="duotone" size={24} className="text-purple-600 mt-1" />
+          <Circuitry weight="duotone" size={24} className="text-purple-600 mt-1" />
           <div>
             <h3 className="text-lg font-bold mb-2">HTTP 402 Payment Protocol (L402)</h3>
             <p className="text-sm text-muted-foreground mb-4">
@@ -345,7 +347,7 @@ export function X402ApiPanel() {
         </div>
         
         <div className="bg-white rounded-xl border border-border p-4">
-          <Lightning weight="duotone" size={24} className="text-primary mb-2" />
+          <HardDrive weight="duotone" size={24} className="text-primary mb-2" />
           <h5 className="font-semibold text-sm mb-2">Benefits</h5>
           <ul className="text-xs text-muted-foreground space-y-1">
             <li>• No credit card or KYC required</li>
