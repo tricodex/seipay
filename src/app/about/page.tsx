@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
-import { ArrowLeft, Lightning, Cpu, Shield, Globe, Gauge, Layers } from '@phosphor-icons/react';
+import { ArrowLeft, Lightning, Cpu, Shield, Globe, Gauge, Stack } from '@phosphor-icons/react';
 
 export default function AboutPage() {
   return (
@@ -92,7 +92,7 @@ export default function AboutPage() {
 
                 <div className="bg-white rounded-xl border border-border p-6">
                   <div className="flex items-start gap-3">
-                    <Layers weight="duotone" size={24} className="text-primary mt-1" />
+                    <Stack weight="duotone" size={24} className="text-primary mt-1" />
                     <div>
                       <h3 className="font-semibold mb-2">Network Features</h3>
                       <ul className="text-sm text-muted-foreground space-y-1">
