@@ -4,9 +4,12 @@ import { useState } from 'react';
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
+import { ConvexProvider, ConvexReactClient } from 'convex/react';
 import { wagmiConfig } from '@/lib/sei/wagmi';
 import '@rainbow-me/rainbowkit/styles.css';
 import { Toaster } from 'sonner';
+
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
@@ -19,21 +22,22 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }));
 
   return (
-    <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          theme={lightTheme({
-            accentColor: '#ff6b35',
-            accentColorForeground: 'white',
-            borderRadius: 'medium',
-            fontStack: 'system',
-            overlayBlur: 'small',
-          })}
-          modalSize="compact"
-          showRecentTransactions={true}
-        >
-          {children}
-          <Toaster
+    <ConvexProvider client={convex}>
+      <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider
+            theme={lightTheme({
+              accentColor: '#ff6b35',
+              accentColorForeground: 'white',
+              borderRadius: 'medium',
+              fontStack: 'system',
+              overlayBlur: 'small',
+            })}
+            modalSize="compact"
+            showRecentTransactions={true}
+          >
+            {children}
+            <Toaster
             position="bottom-right"
             richColors
             theme="light"
@@ -46,8 +50,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
               },
             }}
           />
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </ConvexProvider>
   );
 }

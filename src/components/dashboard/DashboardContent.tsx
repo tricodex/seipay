@@ -11,9 +11,12 @@ import {
   CheckCircle,
   XCircle,
   Info,
-  ArrowRight
+  ArrowRight,
+  User
 } from '@phosphor-icons/react';
 import { PaymentAgent } from './PaymentAgent';
+import { UsernameManager } from './UsernameManager';
+import { X402ApiPanel } from './X402ApiPanel';
 import { cn } from '@/lib/utils';
 
 interface DashboardContentProps {
@@ -21,9 +24,17 @@ interface DashboardContentProps {
 }
 
 export function DashboardContent({ address }: DashboardContentProps) {
-  const [activeTab, setActiveTab] = useState<'agent' | 'b2b' | 'api'>('agent');
+  const [activeTab, setActiveTab] = useState<'agent' | 'b2b' | 'api' | 'profile'>('agent');
 
   const features = [
+    {
+      id: 'profile',
+      icon: User,
+      title: 'Profile & Username',
+      description: 'Manage your unique username',
+      status: 'available',
+      badge: 'New'
+    },
     {
       id: 'agent',
       icon: Robot,
@@ -43,10 +54,10 @@ export function DashboardContent({ address }: DashboardContentProps) {
     {
       id: 'api',
       icon: Code,
-      title: 'API Payments (x402)',
+      title: 'x402 API Payments',
       description: 'Micropayments for APIs',
-      status: 'coming-soon',
-      badge: 'Coming Soon'
+      status: 'available',
+      badge: 'Demo'
     }
   ];
 
@@ -61,7 +72,7 @@ export function DashboardContent({ address }: DashboardContentProps) {
       </div>
 
       {/* Feature Tabs */}
-      <div className="grid md:grid-cols-3 gap-4 mb-8">
+      <div className="grid md:grid-cols-4 gap-4 mb-8">
         {features.map((feature) => {
           const Icon = feature.icon;
           const isActive = activeTab === feature.id;
@@ -112,6 +123,12 @@ export function DashboardContent({ address }: DashboardContentProps) {
 
       {/* Content Area */}
       <div className="bg-white rounded-2xl shadow-xl border border-border overflow-hidden">
+        {activeTab === 'profile' && (
+          <div className="p-8">
+            <UsernameManager />
+          </div>
+        )}
+        
         {activeTab === 'agent' && (
           <PaymentAgent address={address} />
         )}
@@ -154,32 +171,8 @@ export function DashboardContent({ address }: DashboardContentProps) {
         )}
         
         {activeTab === 'api' && (
-          <div className="p-8 text-center space-y-6">
-            <Code weight="light" size={64} className="mx-auto text-muted-foreground" />
-            <div>
-              <h2 className="text-2xl font-bold mb-2">x402 API Payments Coming Soon</h2>
-              <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
-                Enable micropayments for API calls using the x402 protocol. 
-                Perfect for AI agents and automated systems.
-              </p>
-            </div>
-            
-            <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm text-left max-w-2xl mx-auto">
-              <div className="opacity-60"># Example x402 Payment Flow</div>
-              <div className="mt-2">
-                <div>{"POST /api/generate HTTP/1.1"}</div>
-                <div>{"Host: api.example.com"}</div>
-                <div className="text-yellow-400">{"X-Payment: sei1abc...xyz"}</div>
-                <div className="mt-2 opacity-60">{"# Server responds with payment request"}</div>
-                <div>{"HTTP/1.1 402 Payment Required"}</div>
-                <div className="text-blue-400">{"X-Payment-Request: 0.001 SEI"}</div>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Info weight="fill" size={16} />
-              <span>Requires smart contract deployment on Sei Network</span>
-            </div>
+          <div className="p-8">
+            <X402ApiPanel />
           </div>
         )}
       </div>
