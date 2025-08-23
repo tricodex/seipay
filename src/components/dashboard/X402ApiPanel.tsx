@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import { X402Demo } from './X402Demo';
 import { 
   Code, 
   Key, 
@@ -78,6 +79,9 @@ export function X402ApiPanel() {
 
   return (
     <div className="space-y-6">
+      {/* LIVE DEMO - NEW! */}
+      <X402Demo />
+      
       {/* Introduction */}
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-200">
         <div className="flex items-start gap-3">
@@ -359,16 +363,21 @@ export function X402ApiPanel() {
       </div>
 
       {/* Implementation Status */}
-      <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl">
+      <div className="p-4 bg-green-50 border border-green-200 rounded-xl">
         <div className="flex items-start gap-3">
-          <Warning weight="duotone" size={20} className="text-orange-600 mt-0.5" />
-          <div className="text-sm text-orange-900">
-            <p className="font-semibold mb-1">Implementation Status</p>
-            <p>
-              The x402 protocol demonstration above shows how Lightning-based micropayments 
-              will work. Full implementation requires Lightning Network integration with Sei, 
-              which is part of our roadmap for 2025.
+          <CheckCircle weight="fill" size={20} className="text-green-600 mt-0.5" />
+          <div className="text-sm text-green-900">
+            <p className="font-semibold mb-1">✅ REAL Implementation Available!</p>
+            <p className="mb-2">
+              Sei Network has partnered with Coinbase to bring x402 protocol to life! 
+              This is NOT just a demo - it's a working implementation.
             </p>
+            <ul className="space-y-1 list-disc list-inside">
+              <li>Official NPM packages: @sei-js/x402, x402-next</li>
+              <li>USDC stablecoin payments on Sei</li>
+              <li>2-second settlement, $0.001 fees</li>
+              <li>Production-ready for AI APIs and micropayments</li>
+            </ul>
           </div>
         </div>
       </div>
