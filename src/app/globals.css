@@ -2,58 +2,35 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/jetbrains-mono";
 
-/* Tailwind v4 Theme Configuration */
-@theme {
-  /* Colors */
-  --color-background: #ffffff;
-  --color-foreground: #09090b;
-  --color-card: #ffffff;
-  --color-card-foreground: #09090b;
-  --color-primary: #ff6b35;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #ff9558;
-  --color-secondary-foreground: #ffffff;
-  --color-accent: #ff4d1c;
-  --color-accent-foreground: #ffffff;
-  --color-muted: #f4f4f5;
-  --color-muted-foreground: #71717a;
-  --color-border: #e4e4e7;
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #ffffff;
-  --color-success: #22c55e;
-  --color-success-foreground: #ffffff;
-  
-  /* Font families */
-  --font-family-sans: 'Inter Variable', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-family-mono: 'JetBrains Mono Variable', "SF Mono", Monaco, monospace;
-  
-  /* Border radius scale */
-  --radius-none: 0px;
-  --radius-sm: 0.125rem;
-  --radius-DEFAULT: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-2xl: 1rem;
-  --radius-3xl: 1.5rem;
-  --radius-full: 9999px;
+:root {
+  --background: #ffffff;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --primary: #ff6b35;
+  --primary-foreground: #ffffff;
+  --secondary: #ff9558;
+  --secondary-foreground: #ffffff;
+  --accent: #ff4d1c;
+  --accent-foreground: #ffffff;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --border: #e4e4e7;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success: #22c55e;
+  --success-foreground: #ffffff;
 }
 
-/* Base styles */
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  border-width: 0;
-  border-style: solid;
-  border-color: theme(--color-border);
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   -moz-tab-size: 4;
   tab-size: 4;
-  font-family: theme(--font-family-sans);
+  font-family: 'Inter Variable', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
   scroll-behavior: smooth;
 }
@@ -61,9 +38,9 @@ html {
 body {
   margin: 0;
   line-height: inherit;
-  background: theme(--color-background);
-  color: theme(--color-foreground);
-  font-family: theme(--font-family-sans);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter Variable', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 1rem;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -72,61 +49,9 @@ body {
   font-variation-settings: "wght" 400;
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-  font-size: inherit;
-  font-weight: inherit;
-}
-
-/* Links */
-a {
-  color: inherit;
-  text-decoration: inherit;
-}
-
-/* Lists */
-ol, ul {
-  list-style: none;
-}
-
-/* Forms */
-button, input, optgroup, select, textarea {
-  font-family: inherit;
-  font-size: 100%;
-  font-weight: inherit;
-  line-height: inherit;
-  color: inherit;
-  margin: 0;
-  padding: 0;
-}
-
-button {
-  background-color: transparent;
-  background-image: none;
-  cursor: pointer;
-}
-
-/* Images */
-img, svg, video, canvas, audio, iframe, embed, object {
-  display: block;
-  vertical-align: middle;
-}
-
-img, video {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Tables */
-table {
-  text-indent: 0;
-  border-color: inherit;
-  border-collapse: collapse;
-}
-
 /* Code */
 code, kbd, samp, pre {
-  font-family: theme(--font-family-mono);
+  font-family: 'JetBrains Mono Variable', "SF Mono", Monaco, monospace;
   font-size: 1em;
 }
 
@@ -221,6 +146,26 @@ code, kbd, samp, pre {
   }
 }
 
+/* Utility Classes */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 12px;
@@ -228,42 +173,30 @@ code, kbd, samp, pre {
 }
 
 ::-webkit-scrollbar-track {
-  background: theme(--color-muted);
-  border-radius: theme(--radius-lg);
+  background: var(--muted);
+  border-radius: 0.5rem;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme(--color-primary);
-  border-radius: theme(--radius-lg);
+  background: var(--primary);
+  border-radius: 0.5rem;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: theme(--color-accent);
+  background: var(--accent);
 }
 
 /* Selection */
 ::selection {
-  background: theme(--color-primary);
-  color: theme(--color-primary-foreground);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 /* Focus */
 :focus-visible {
-  outline: 2px solid theme(--color-primary);
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
-  border-radius: theme(--radius-sm);
-}
-
-/* Utility Classes */
-.gradient-primary {
-  background: linear-gradient(135deg, theme(--color-primary) 0%, theme(--color-accent) 100%);
-}
-
-.gradient-text {
-  background: linear-gradient(135deg, theme(--color-primary) 0%, theme(--color-accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  border-radius: 0.125rem;
 }
 
 /* Animation Classes */
@@ -313,7 +246,6 @@ code, kbd, samp, pre {
   animation: bounce 1s infinite;
 }
 
-/* Fade in animation */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -327,7 +259,6 @@ code, kbd, samp, pre {
   animation: fade-in 250ms ease-in;
 }
 
-/* Zoom in animation */
 @keyframes zoom-in {
   from {
     opacity: 0;
@@ -341,12 +272,4 @@ code, kbd, samp, pre {
 
 .zoom-in {
   animation: zoom-in 250ms ease-out;
-}
-
-/* Glass effect */
-.glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
 }
