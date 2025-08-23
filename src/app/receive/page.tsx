@@ -1,97 +1,181 @@
 'use client';
 
+import { useState } from 'react';
+import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { PaymentQR } from '@/components/payment/PaymentQR';
 import { WalletButton } from '@/components/wallet/WalletButton';
-import { ArrowLeft, Wallet } from 'lucide-react';
-import Link from 'next/link';
+import { ArrowLeft, QrCode, Wallet, Copy, CheckCircle, Share } from '@phosphor-icons/react';
 import { useAccount } from 'wagmi';
-import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function ReceivePage() {
   const { address } = useAccount();
   const [amount, setAmount] = useState('');
+  const [recipientName, setRecipientName] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const copyAddress = () => {
+    if (address) {
+      navigator.clipboard.writeText(address);
+      setCopied(true);
+      toast.success('Address copied to clipboard');
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const sharePaymentLink = () => {
+    const paymentUrl = `${window.location.origin}/send?to=${address}${amount ? `&amount=${amount}` : ''}`;
+    if (navigator.share) {
+      navigator.share({
+        title: 'SeiPay Payment Request',
+        text: `Send me ${amount ? `${amount} SEI` : 'a payment'} via SeiPay`,
+        url: paymentUrl,
+      });
+    } else {
+      navigator.clipboard.writeText(paymentUrl);
+      toast.success('Payment link copied to clipboard');
+    }
+  };
 
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-16">
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-2xl mx-auto">
-            {/* Back Button */}
-            <Link 
-              href="/"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </Link>
+      <main className="min-h-screen bg-gradient-to-b from-white via-orange-50/20 to-white pt-24 pb-16">
+        <div className="container-fluid">
+          {/* Back Link */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8"
+          >
+            <ArrowLeft weight="regular" size={20} />
+            <span>Back to Home</span>
+          </Link>
 
-            {/* Page Title */}
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold mb-4">
-                Receive <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">SEI Payment</span>
-              </h1>
-              <p className="text-muted-foreground">
-                Share your QR code or payment link to receive instant payments
-              </p>
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* Left Content */}
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h1 className="text-4xl lg:text-5xl font-bold tracking-tight">
+                  Receive Payment
+                </h1>
+                <p className="text-xl text-muted-foreground">
+                  Share your QR code or wallet address to receive instant payments on Sei Network.
+                </p>
+              </div>
+
+              {address ? (
+                <div className="space-y-4">
+                  {/* Amount Input */}
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">
+                      Request Amount (Optional)
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        placeholder="0.001"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        step="0.0001"
+                        min="0"
+                        className="flex-1 px-4 py-3 rounded-xl bg-white border border-border focus:outline-none focus:border-primary transition-colors"
+                      />
+                      <span className="px-4 py-3 bg-muted rounded-xl font-semibold">SEI</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Set a specific amount for the payment request
+                    </p>
+                  </div>
+
+                  {/* Name Input */}
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">
+                      Display Name (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Your name or business"
+                      value={recipientName}
+                      onChange={(e) => setRecipientName(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-border focus:outline-none focus:border-primary transition-colors"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      This will be shown to the sender
+                    </p>
+                  </div>
+
+                  {/* Wallet Address */}
+                  <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-semibold text-orange-900">Your Wallet Address</span>
+                      <button
+                        onClick={copyAddress}
+                        className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg bg-white border border-orange-200 hover:bg-orange-100 transition-colors"
+                      >
+                        {copied ? (
+                          <>
+                            <CheckCircle weight="fill" size={14} className="text-success" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy weight="regular" size={14} />
+                            <span>Copy</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    <code className="text-xs font-mono text-orange-800 break-all">
+                      {address}
+                    </code>
+                  </div>
+
+                  {/* Share Button */}
+                  <button
+                    onClick={sharePaymentLink}
+                    className="w-full px-6 py-3 rounded-xl gradient-primary text-white font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Share weight="regular" size={20} />
+                    Share Payment Link
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
+                  <p className="text-orange-900 mb-4">
+                    Connect your wallet to start receiving payments
+                  </p>
+                  <WalletButton />
+                </div>
+              )}
             </div>
 
-            {address ? (
-              <>
-                {/* Optional Amount Input */}
-                <div className="bg-card rounded-xl border border-border p-6 mb-6">
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                    Request Specific Amount (Optional)
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      placeholder="0.001"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      step="0.0001"
-                      min="0"
-                      className="flex-1 px-4 py-2 rounded-lg bg-background border border-border focus:outline-none focus:border-primary transition-colors"
-                    />
-                    <span className="px-4 py-2 bg-muted rounded-lg font-medium">SEI</span>
+            {/* Right QR Code */}
+            <div className="lg:sticky lg:top-24">
+              {address ? (
+                <div className="bg-white rounded-2xl shadow-xl border border-border p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <QrCode weight="regular" size={24} className="text-primary" />
+                    <h2 className="text-2xl font-bold">Payment QR Code</h2>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    If set, the payment QR will include this amount
-                  </p>
-                </div>
-
-                {/* QR Code Section */}
-                <div className="bg-card rounded-xl border border-border p-8 shadow-xl">
+                  
                   <PaymentQR 
                     address={address} 
-                    recipientName="Your Wallet"
+                    recipientName={recipientName || 'Your Wallet'}
                     amount={amount || undefined}
                   />
                 </div>
-
-                {/* Wallet Info */}
-                <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Connected Wallet:</span>
-                    <code className="text-xs bg-background px-2 py-1 rounded font-mono">
-                      {address.slice(0, 6)}...{address.slice(-4)}
-                    </code>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="bg-card rounded-xl border border-border p-12 text-center">
-                <Wallet className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-xl font-semibold mb-2">No Wallet Connected</h3>
-                <p className="text-muted-foreground mb-6">
-                  Connect your wallet to generate a payment QR code
-                </p>
-                <div className="flex justify-center">
+              ) : (
+                <div className="bg-white rounded-2xl shadow-xl border border-border p-12 text-center">
+                  <Wallet weight="light" size={64} className="mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-xl font-semibold mb-2">No Wallet Connected</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Connect your wallet to generate a payment QR code
+                  </p>
                   <WalletButton />
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </main>
