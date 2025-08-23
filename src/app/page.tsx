@@ -90,7 +90,7 @@ export default function Home() {
                 <div className="flex flex-wrap gap-6">
                   <div className="flex items-center gap-2">
                     <Clock weight="duotone" size={24} className="text-primary" />
-                    <span className="font-medium">< 1 sec transfers</span>
+                    <span className="font-medium">&lt; 1 sec transfers</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <ShieldCheck weight="duotone" size={24} className="text-primary" />
@@ -246,7 +246,7 @@ export default function Home() {
                     <div className="border-t-2 border-primary pt-6">
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-primary">SeiPay</span>
-                        <span className="font-bold text-success">< 1 second, 0% fee</span>
+                        <span className="font-bold text-success">&lt; 1 second, 0% fee</span>
                       </div>
                     </div>
                   </div>
