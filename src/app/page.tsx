@@ -19,7 +19,6 @@ import {
 } from '@phosphor-icons/react';
 import { useAccount } from 'wagmi';
 import PaymentAnimation from '../../public/Payment.json';
-import TigerAnimation from '../../public/Tiger.json';
 import WorldmapAnimation from '../../public/Worldmap.json';
 
 export default function Home() {
@@ -265,21 +264,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA Section with Tiger Animation */}
+        {/* CTA Section */}
         <section className="py-20">
           <div className="container">
             <div className="max-w-4xl mx-auto text-center space-y-8">
-              <div>
-                {mounted && (
-                  <LottieAnimation
-                    animationData={TigerAnimation}
-                    className="w-32 h-32 mx-auto"
-                    loop
-                    autoplay
-                  />
-                )}
-              </div>
-              
               <div className="space-y-4">
                 <h2 className="text-3xl lg:text-4xl font-bold">
                   Ready to Experience the Future?
