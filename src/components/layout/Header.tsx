@@ -3,19 +3,22 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAccount } from 'wagmi';
 import { WalletButton } from '@/components/wallet/WalletButton';
 import { 
   List, 
   X, 
   PaperPlaneTilt, 
   QrCode, 
-  Info
+  Info,
+  Gauge
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isConnected } = useAccount();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,6 +34,11 @@ export function Header() {
     { href: '/receive', label: 'Receive', icon: QrCode },
     { href: '/about', label: 'About', icon: Info },
   ];
+
+  // Add dashboard link if wallet is connected
+  const allLinks = isConnected 
+    ? [{ href: '/dashboard', label: 'Dashboard', icon: Gauge }, ...navLinks]
+    : navLinks;
 
   return (
     <header
@@ -60,13 +68,18 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => {
+            {allLinks.map((link) => {
               const Icon = link.icon;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-lg transition-all",
+                    link.href === '/dashboard' 
+                      ? "text-primary font-semibold hover:bg-orange-50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
                 >
                   <Icon weight="regular" size={18} />
                   <span className="font-medium">{link.label}</span>
@@ -100,16 +113,21 @@ export function Header() {
         <div className="md:hidden bg-white/95 backdrop-blur-lg border-t border-border">
           <div className="container-fluid py-4">
             <nav className="flex flex-col gap-1">
-              {navLinks.map((link) => {
+              {allLinks.map((link) => {
                 const Icon = link.icon;
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors"
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
+                      link.href === '/dashboard'
+                        ? "bg-orange-50 text-primary font-semibold"
+                        : "hover:bg-muted"
+                    )}
                   >
-                    <Icon weight="regular" size={20} className="text-primary" />
+                    <Icon weight="regular" size={20} className={link.href === '/dashboard' ? "text-primary" : "text-primary"} />
                     <span className="font-medium">{link.label}</span>
                   </Link>
                 );

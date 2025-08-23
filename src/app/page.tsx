@@ -139,7 +139,7 @@ export default function Home() {
                   </div>
 
                   {/* Tab Content - Fixed minimum height based on send form */}
-                  <div className="p-6 min-h-[600px] flex flex-col">
+                  <div className="p-6 min-h-[660px] flex flex-col">
                     {activeTab === 'send' ? (
                       <PaymentForm showRecipientInput />
                     ) : (

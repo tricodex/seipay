@@ -15,6 +15,7 @@ import {
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { validateUsername, isValidWalletAddress } from '@/lib/security';
 
 export function UsernameManager() {
   const { address } = useAccount();
@@ -36,23 +37,25 @@ export function UsernameManager() {
       : 'skip'
   );
 
-  // Register user on mount if needed
+  // Register user on mount if needed (with validation)
   useEffect(() => {
-    if (address && !user) {
+    if (address && !user && isValidWalletAddress(address)) {
       registerUser({ walletAddress: address });
     }
   }, [address, user, registerUser]);
 
-  // Handle username validation
+  // Handle username validation with security checks
   useEffect(() => {
     if (!isEditing) return;
     
     const timer = setTimeout(() => {
-      if (newUsername.length >= 3) {
-        setIsChecking(true);
-      } else {
-        setValidationMessage('Username must be at least 3 characters');
+      const validation = validateUsername(newUsername);
+      
+      if (!validation.isValid) {
+        setValidationMessage(validation.error || 'Invalid username');
         setIsChecking(false);
+      } else if (newUsername.length >= 3) {
+        setIsChecking(true);
       }
     }, 500);
 
