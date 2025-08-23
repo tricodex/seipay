@@ -260,14 +260,14 @@ h4 { font-size: var(--font-size-2xl); }
 h5 { font-size: var(--font-size-xl); }
 h6 { font-size: var(--font-size-lg); }
 
-/* Container */
+/* Container - CRITICAL FIX */
 .container {
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--container-padding);
-  padding-right: var(--container-padding);
   max-width: var(--container-max-width);
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 @media (min-width: 640px) {
@@ -285,6 +285,13 @@ h6 { font-size: var(--font-size-lg); }
 }
 
 @media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
   .container {
     padding-left: 2rem;
     padding-right: 2rem;
