@@ -11,10 +11,14 @@ import {
   CheckCircle, 
   Coffee, 
   Lightning, 
-  Heart 
+  Heart,
+  Hamburger,
+  ForkKnife,
+  Gift
 } from '@phosphor-icons/react';
 import { DEFAULT_PAYMENT_AMOUNTS, TX_STATUS, DEFAULT_NETWORK } from '@/lib/sei/config';
 import { formatAddress, formatSei, isValidSeiAddress, cn } from '@/lib/utils';
+import { PaymentSuccess } from './PaymentSuccess';
 
 interface PaymentFormProps {
   recipientAddress?: string;
@@ -38,6 +42,7 @@ export function PaymentForm({
   const [message, setMessage] = useState('');
   const [txStatus, setTxStatus] = useState<string>(TX_STATUS.IDLE);
   const [mounted, setMounted] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   
   const {
     sendTransaction,
@@ -64,25 +69,18 @@ export function PaymentForm({
   }, [recipientAddress]);
 
   useEffect(() => {
-    if (isConfirmed) {
+    if (isConfirmed && hash) {
       setTxStatus(TX_STATUS.CONFIRMED);
-      toast.success(
-        <div className="flex flex-col gap-1">
-          <span className="font-semibold">Payment sent successfully! 🎉</span>
-          <span className="text-sm opacity-90">
-            {formatSei(customAmount || amount)} SEI sent to {recipientName || formatAddress(recipient)}
-          </span>
-        </div>
-      );
+      setShowSuccessModal(true);
       
-      // Reset form after success
+      // Reset form after modal closes
       setTimeout(() => {
         setCustomAmount('');
         setMessage('');
         setTxStatus(TX_STATUS.IDLE);
-      }, 3000);
+      }, 5000);
     }
-  }, [isConfirmed, amount, customAmount, recipient, recipientName]);
+  }, [isConfirmed, hash]);
 
   useEffect(() => {
     if (sendError) {
@@ -203,11 +201,13 @@ export function PaymentForm({
                     : "border-border bg-card"
                 )}
               >
-                <div className="text-lg mb-1">
-                  {preset.label.includes('Coffee') && <Coffee weight="regular" size={20} className="mx-auto" />}
-                  {preset.label.includes('Premium') && <Lightning weight="regular" size={20} className="mx-auto" />}
-                  {preset.label.includes('Supporter') && <Heart weight="regular" size={20} className="mx-auto" />}
-                  {!preset.label.includes('Coffee') && !preset.label.includes('Premium') && !preset.label.includes('Supporter') && preset.label.split(' ')[1]}
+                <div className="flex items-center justify-center mb-1">
+                  {preset.label.includes('Coffee') && <Coffee weight="duotone" size={24} className="text-primary" />}
+                  {preset.label.includes('Lunch') && <Hamburger weight="duotone" size={24} className="text-primary" />}
+                  {preset.label.includes('Dinner') && <ForkKnife weight="duotone" size={24} className="text-primary" />}
+                  {preset.label.includes('Premium') && <Lightning weight="duotone" size={24} className="text-primary" />}
+                  {preset.label.includes('Generous') && <Gift weight="duotone" size={24} className="text-primary" />}
+                  {preset.label.includes('Supporter') && <Heart weight="duotone" size={24} className="text-primary" />}
                 </div>
                 <div className="text-xs font-medium">{preset.value} SEI</div>
                 <div className="text-xs text-muted-foreground">{preset.usd}</div>
@@ -306,6 +306,16 @@ export function PaymentForm({
           )}
         </button>
       </form>
+      
+      {/* Payment Success Modal */}
+      <PaymentSuccess
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        amount={customAmount || amount}
+        recipient={recipient}
+        recipientName={recipientName}
+        txHash={hash}
+      />
     </div>
   );
 }
