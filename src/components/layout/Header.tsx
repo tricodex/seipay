@@ -113,7 +113,7 @@ export function Header() {
                     <span className="font-medium">{link.label}</span>
                   </Link>
                 );
-              }}}
+              })}
             </nav>
             
             <div className="mt-4 pt-4 border-t border-border">
