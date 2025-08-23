@@ -138,22 +138,25 @@ export default function Home() {
                     </button>
                   </div>
 
-                  {/* Tab Content - Fixed height container */}
-                  <div className="p-6 min-h-[420px]">
+                  {/* Tab Content - Fixed minimum height based on send form */}
+                  <div className="p-6 min-h-[600px] flex flex-col">
                     {activeTab === 'send' ? (
                       <PaymentForm showRecipientInput />
                     ) : (
-                      <div className="h-full flex flex-col justify-center">
+                      <div className="flex-1 flex items-center justify-center">
                         {address ? (
                           <PaymentQR address={address} recipientName="Your Wallet" />
                         ) : (
-                          <div className="text-center space-y-4">
-                            <Wallet weight="light" size={48} className="mx-auto text-muted-foreground" />
+                          <div className="text-center space-y-6">
+                            <Wallet weight="light" size={64} className="mx-auto text-muted-foreground" />
                             <div>
-                              <p className="text-muted-foreground mb-4">
+                              <p className="text-lg font-medium text-foreground mb-2">
+                                Connect Wallet to Receive
+                              </p>
+                              <p className="text-muted-foreground">
                                 Connect your wallet to generate a payment QR code
                               </p>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-sm text-muted-foreground mt-2">
                                 Your address will be displayed here for others to send you payments
                               </p>
                             </div>
