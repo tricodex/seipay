@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAccount } from 'wagmi';
 import { WalletButton } from '@/components/wallet/WalletButton';
+import { TestWalletToggle } from '@/components/wallet/TestWalletToggle';
 import { 
   List, 
   X, 
@@ -89,7 +90,8 @@ export function Header() {
           </nav>
 
           {/* Desktop Wallet Button */}
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-2">
+            <TestWalletToggle />
             <WalletButton />
           </div>
 
@@ -134,7 +136,8 @@ export function Header() {
               })}
             </nav>
             
-            <div className="mt-4 pt-4 border-t border-border">
+            <div className="mt-4 pt-4 border-t border-border space-y-2">
+              <TestWalletToggle />
               <WalletButton />
             </div>
           </div>
