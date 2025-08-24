@@ -14,11 +14,14 @@ import {
   ArrowRight,
   UserCircle,
   MagicWand,
-  Cpu
+  Cpu,
+  Wallet,
+  Lock
 } from '@phosphor-icons/react';
 import { PaymentAgent } from './PaymentAgent';
 import { UsernameManager } from './UsernameManager';
 import { X402ApiPanel } from './X402ApiPanel';
+import { CustodialWalletPanel } from './CustodialWalletPanel';
 import { cn } from '@/lib/utils';
 
 interface DashboardContentProps {
@@ -26,7 +29,7 @@ interface DashboardContentProps {
 }
 
 export function DashboardContent({ address }: DashboardContentProps) {
-  const [activeTab, setActiveTab] = useState<'agent' | 'b2b' | 'api' | 'profile'>('agent');
+  const [activeTab, setActiveTab] = useState<'agent' | 'b2b' | 'api' | 'profile' | 'wallets'>('agent');
 
   const features = [
     {
@@ -36,6 +39,14 @@ export function DashboardContent({ address }: DashboardContentProps) {
       description: 'Manage your unique username',
       status: 'available',
       badge: 'New'
+    },
+    {
+      id: 'wallets',
+      icon: Lock,
+      title: 'Custodial Wallets',
+      description: 'AI-controlled secure wallets',
+      status: 'available',
+      badge: 'Secure'
     },
     {
       id: 'agent',
@@ -131,13 +142,19 @@ export function DashboardContent({ address }: DashboardContentProps) {
           </div>
         )}
         
+        {activeTab === 'wallets' && (
+          <div className="p-8">
+            <CustodialWalletPanel />
+          </div>
+        )}
+        
         {activeTab === 'agent' && (
           <PaymentAgent address={address} />
         )}
         
         {activeTab === 'b2b' && (
           <div className="p-8 text-center space-y-6">
-            <Building weight="light" size={64} className="mx-auto text-muted-foreground" />
+            <Buildings weight="light" size={64} className="mx-auto text-muted-foreground" />
             <div>
               <h2 className="text-2xl font-bold mb-2">B2B Payments Coming Soon</h2>
               <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
