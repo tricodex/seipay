@@ -1,5 +1,7 @@
 # SeiPay
 
+![home](public/home.png)
+
 Payment application built on Sei Network that simplifies crypto transactions through QR codes, payment links, and usernames.
 
 ## Features
