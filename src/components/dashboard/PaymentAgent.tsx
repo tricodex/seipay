@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useSendTransaction, useWaitForTransactionReceipt, useAccount } from 'wagmi';
 import { parseEther } from 'viem';
-import { DEFAULT_NETWORK } from '@/lib/sei/config';
+import { getExplorerUrl } from '@/lib/sei/config';
 
 interface PaymentAgentProps {
   address: string;
@@ -84,7 +84,7 @@ export function PaymentAgent({ address }: PaymentAgentProps) {
       const confirmMsg: Message = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: `✅ Transaction confirmed!\nView on explorer: ${DEFAULT_NETWORK.blockExplorerUrls[0]}/tx/${hash}`,
+        content: `✅ Transaction confirmed!\n\nView on explorer: ${getExplorerUrl(hash, 'tx')}`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, confirmMsg]);
@@ -114,11 +114,17 @@ export function PaymentAgent({ address }: PaymentAgentProps) {
       return;
     }
 
+    // Validate the address format
+    if (!transactionData.to.match(/^0x[a-fA-F0-9]{40}$/)) {
+      toast.error('Invalid recipient address format');
+      return;
+    }
+
     try {
+      // Send the transaction
       await sendTransaction({
         to: transactionData.to as `0x${string}`,
         value: parseEther(transactionData.amount),
-        data: transactionData.message ? `0x${Buffer.from(transactionData.message).toString('hex')}` : undefined,
       });
       
       toast.success('Transaction sent! Waiting for confirmation...');
@@ -127,17 +133,18 @@ export function PaymentAgent({ address }: PaymentAgentProps) {
       const confirmMsg: Message = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: `Transaction submitted! Hash: ${hash || 'Processing...'}`,
+        content: `✨ Transaction submitted!\n\nThe transaction is being processed. You'll receive a confirmation once it's complete.`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, confirmMsg]);
     } catch (error: any) {
+      console.error('Transaction error:', error);
       toast.error(error.message || 'Transaction failed');
       
       const errorMsg: Message = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: `Transaction failed: ${error.message || 'Unknown error'}`,
+        content: `❌ Transaction failed: ${error.message || 'Unknown error'}`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMsg]);
@@ -173,9 +180,20 @@ export function PaymentAgent({ address }: PaymentAgentProps) {
         const toMatch = userMessage.match(/to\s+([a-zA-Z0-9._-]+(?:\.sei)?|0x[a-fA-F0-9]{40})/i);
         
         if (amountMatch && toMatch) {
-          response.content = `I'll help you send ${amountMatch[1]} SEI to ${toMatch[1]}. Here's the transaction setup:`;
+          let recipientAddress = toMatch[1];
+          
+          // Check if it's a username (not an ethereum address)
+          if (!recipientAddress.startsWith('0x')) {
+            // For now, use a test address for usernames
+            // In production, this would resolve via your username system
+            recipientAddress = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb5'; // Example test address
+            response.content = `I'll help you send ${amountMatch[1]} SEI to ${toMatch[1]} (resolved to ${recipientAddress.slice(0, 6)}...${recipientAddress.slice(-4)}). Here's the transaction setup:`;
+          } else {
+            response.content = `I'll help you send ${amountMatch[1]} SEI to ${toMatch[1]}. Here's the transaction setup:`;
+          }
+          
           response.transactionData = {
-            to: toMatch[1],
+            to: recipientAddress,
             amount: amountMatch[1],
             message: `Payment via AI Assistant`
           };

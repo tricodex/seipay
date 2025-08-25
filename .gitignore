@@ -11,6 +11,8 @@
 !.yarn/versions
 slides/
 proj.md
+AI_PAYMENT.md
+FIXES_SUMMARY.md
 
 # testing
 /coverage
