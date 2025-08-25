@@ -23,7 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <ConvexProvider client={convex}>
-      <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
+      <WagmiProvider config={wagmiConfig} reconnectOnMount={true}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider
             theme={lightTheme({

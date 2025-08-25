@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { x402Middleware } from 'x402-next';
+// Note: x402Middleware is not exported from x402-next, removed unused import
 import { 
   generatePaymentRequirements, 
   X402_CONFIG,

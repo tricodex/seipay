@@ -54,8 +54,19 @@ export const storeWallet = mutation({
     keyHash: v.string(),
     type: v.union(v.literal("generated"), v.literal("imported")),
     label: v.optional(v.string()),
+    walletName: v.optional(v.string()), // Unique wallet name (without username prefix)
   },
   handler: async (ctx, args) => {
+    // Get user's username
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_wallet", (q) => q.eq("walletAddress", args.userId.toLowerCase()))
+      .first();
+    
+    if (!user || !user.username) {
+      throw new Error("Please set up your username first");
+    }
+    
     // Check if user already has maximum wallets (e.g., 5)
     const existingWallets = await ctx.db
       .query("custodialWallets")
@@ -64,6 +75,25 @@ export const storeWallet = mutation({
     
     if (existingWallets.length >= 5) {
       throw new Error("Maximum number of custodial wallets reached (5)");
+    }
+    
+    // Validate wallet name uniqueness if provided
+    let fullWalletName: string | undefined;
+    if (args.walletName) {
+      // Clean the wallet name
+      const cleanName = args.walletName.toLowerCase().replace(/[^a-z0-9-]/g, '');
+      if (cleanName.length < 1 || cleanName.length > 20) {
+        throw new Error("Wallet name must be 1-20 characters (letters, numbers, hyphens)");
+      }
+      
+      // Create full wallet name: username.walletname
+      fullWalletName = `${user.username}.${cleanName}`;
+      
+      // Check if this wallet name already exists for this user
+      const existingWithName = existingWallets.find(w => w.fullWalletName === fullWalletName);
+      if (existingWithName) {
+        throw new Error(`Wallet name '${cleanName}' already exists`);
+      }
     }
     
     // Check for duplicate addresses
@@ -88,6 +118,8 @@ export const storeWallet = mutation({
       keyHash: args.keyHash,
       type: args.type,
       label: args.label,
+      walletName: args.walletName,
+      fullWalletName,
       createdAt: Date.now(),
       aiAccess: {
         enabled: false,
@@ -131,6 +163,8 @@ export const getUserWallets = query({
       address: wallet.address,
       type: wallet.type,
       label: wallet.label,
+      walletName: wallet.walletName,
+      fullWalletName: wallet.fullWalletName,
       createdAt: wallet.createdAt,
       lastUsed: wallet.lastUsed,
       aiAccess: wallet.aiAccess,

@@ -13,10 +13,14 @@ import {
   Wallet,
   CurrencyCircleDollar,
   Cpu,
-  Atom
+  Atom,
+  CircleNotch
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useSendTransaction, useWaitForTransactionReceipt, useAccount } from 'wagmi';
+import { parseEther } from 'viem';
+import { DEFAULT_NETWORK } from '@/lib/sei/config';
 
 interface PaymentAgentProps {
   address: string;
@@ -51,6 +55,10 @@ const CAPABILITIES = [
 ];
 
 export function PaymentAgent({ address }: PaymentAgentProps) {
+  const { isConnected } = useAccount();
+  const { sendTransaction, data: hash, isPending: isSending } = useSendTransaction();
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -70,6 +78,19 @@ export function PaymentAgent({ address }: PaymentAgentProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    if (isConfirmed && hash) {
+      toast.success('Transaction confirmed!');
+      const confirmMsg: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `✅ Transaction confirmed!\nView on explorer: ${DEFAULT_NETWORK.blockExplorerUrls[0]}/tx/${hash}`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, confirmMsg]);
+    }
+  }, [isConfirmed, hash]);
+
   const handleCopy = (text: string, messageId: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(messageId);
@@ -80,6 +101,47 @@ export function PaymentAgent({ address }: PaymentAgentProps) {
   const handleSuggestionClick = (suggestion: string) => {
     setInput(suggestion);
     inputRef.current?.focus();
+  };
+
+  const executeTransaction = async (transactionData: { to?: string; amount?: string; message?: string }) => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet first');
+      return;
+    }
+
+    if (!transactionData.to || !transactionData.amount) {
+      toast.error('Missing transaction details');
+      return;
+    }
+
+    try {
+      await sendTransaction({
+        to: transactionData.to as `0x${string}`,
+        value: parseEther(transactionData.amount),
+        data: transactionData.message ? `0x${Buffer.from(transactionData.message).toString('hex')}` : undefined,
+      });
+      
+      toast.success('Transaction sent! Waiting for confirmation...');
+      
+      // Add a confirmation message
+      const confirmMsg: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `Transaction submitted! Hash: ${hash || 'Processing...'}`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, confirmMsg]);
+    } catch (error: any) {
+      toast.error(error.message || 'Transaction failed');
+      
+      const errorMsg: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `Transaction failed: ${error.message || 'Unknown error'}`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMsg]);
+    }
   };
 
   const processMessage = async (userMessage: string) => {
@@ -287,8 +349,19 @@ export function PaymentAgent({ address }: PaymentAgentProps) {
                         <div>Message: {message.transactionData.message}</div>
                       )}
                     </div>
-                    <button className="mt-2 px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-medium transition-colors">
-                      Execute Transaction
+                    <button 
+                      onClick={() => executeTransaction(message.transactionData!)}
+                      disabled={isSending || isConfirming}
+                      className="mt-2 px-3 py-1 bg-white/20 hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-xs font-medium transition-colors flex items-center gap-2"
+                    >
+                      {isSending || isConfirming ? (
+                        <>
+                          <CircleNotch size={12} className="animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        'Execute Transaction'
+                      )}
                     </button>
                   </div>
                 )}

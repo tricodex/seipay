@@ -56,14 +56,14 @@ export function DashboardContent({ address }: DashboardContentProps) {
       status: 'available',
       badge: 'Beta'
     },
-    {
-      id: 'b2b',
-      icon: Buildings,
-      title: 'B2B Payments',
-      description: 'Enterprise payment solutions',
-      status: 'coming-soon',
-      badge: 'Coming Soon'
-    },
+    // {
+    //   id: 'b2b',
+    //   icon: Buildings,
+    //   title: 'B2B Payments',
+    //   description: 'Enterprise payment solutions',
+    //   status: 'coming-soon',
+    //   badge: 'Coming Soon'
+    // },
     {
       id: 'api',
       icon: HardDrive,

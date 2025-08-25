@@ -84,7 +84,9 @@ export default defineSchema({
     
     // Metadata
     type: v.union(v.literal("generated"), v.literal("imported")),
-    label: v.optional(v.string()),
+    label: v.optional(v.string()), // Display label
+    walletName: v.optional(v.string()), // Unique wallet name (without username)
+    fullWalletName: v.optional(v.string()), // Full name: username.walletname
     createdAt: v.number(),
     lastUsed: v.optional(v.number()),
     

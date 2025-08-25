@@ -35,23 +35,24 @@ export default function DashboardPage() {
     }
   }, []);
 
-  // Authentication check with delay to allow wallet reconnection
+  // Authentication check with proper wallet state handling
   useEffect(() => {
     if (!isClient) return;
 
-    // Allow time for wallet to reconnect on page load
-    const timer = setTimeout(() => {
-      if (testModeActive) {
-        // In test mode, always consider authenticated
-        setAuthChecked(true);
-      } else if (!isConnecting && !isReconnecting && !isConnected) {
-        setAuthChecked(true);
-      } else if (isConnected) {
+    // If wallet is actively connecting/reconnecting, wait
+    if (isConnecting || isReconnecting) {
+      return;
+    }
+
+    // Give wallet time to auto-reconnect (500ms grace period)
+    const timeoutId = setTimeout(() => {
+      // Once wallet state is settled, check authentication
+      if (testModeActive || isConnected || (!isConnecting && !isReconnecting)) {
         setAuthChecked(true);
       }
-    }, 1000); // Give 1 second for wallet to reconnect
+    }, 500);
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timeoutId);
   }, [isClient, isConnected, isConnecting, isReconnecting, testModeActive]);
 
   // Loading state while checking authentication (skip for test mode)

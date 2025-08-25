@@ -9,7 +9,7 @@ export const SEI_NETWORKS = {
       decimals: 18,
     },
     rpcUrls: ['https://evm-rpc.sei-apis.com'],
-    blockExplorerUrls: ['https://seitrace.com'],
+    blockExplorerUrls: ['https://seistream.app'],
   },
   testnet: {
     chainId: 1328, // 0x530 in hex
@@ -20,7 +20,7 @@ export const SEI_NETWORKS = {
       decimals: 18,
     },
     rpcUrls: ['https://evm-rpc-testnet.sei-apis.com'],
-    blockExplorerUrls: ['https://seitrace.com'],
+    blockExplorerUrls: ['https://testnet.seistream.app'],
   },
 } as const;
 
@@ -54,6 +54,12 @@ export const WALLET_CONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_P
 // Explorer URLs
 export const getExplorerUrl = (hash: string, type: 'tx' | 'address' = 'tx') => {
   const baseUrl = DEFAULT_NETWORK.blockExplorerUrls[0];
+  // Seistream uses different URL structure
+  if (type === 'tx') {
+    return `${baseUrl}/tx/${hash}`;
+  } else if (type === 'address') {
+    return `${baseUrl}/account/${hash}`;
+  }
   return `${baseUrl}/${type}/${hash}`;
 };
 

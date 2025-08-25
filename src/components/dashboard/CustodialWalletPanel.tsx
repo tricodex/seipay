@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useAccount } from 'wagmi';
 import { useMutation, useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
+import { api } from '../../../convex/_generated/api';
 import {
   Wallet,
   Key,
@@ -18,8 +18,9 @@ import {
   CheckCircle,
   Copy,
   Trash,
-  Settings,
+  Gear,
   Download,
+  PaperPlaneRight,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -27,12 +28,15 @@ import {
   generateWallet,
   importWallet,
   unlockWallet,
-  validatePasswordStrength,
-  generateSecurePassword,
   generateRecoveryCode,
   AccessLevel,
   WalletType,
 } from '@/lib/wallet/custodial';
+import {
+  validatePasswordStrength,
+  generateSecurePassword,
+} from '@/lib/wallet/encryption';
+import { CustodialWalletActions } from './CustodialWalletActions';
 
 export function CustodialWalletPanel() {
   const { address } = useAccount();
@@ -42,13 +46,19 @@ export function CustodialWalletPanel() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [privateKeyInput, setPrivateKeyInput] = useState('');
   const [walletLabel, setWalletLabel] = useState('');
+  const [walletName, setWalletName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [generatedMnemonic, setGeneratedMnemonic] = useState<string | null>(null);
   const [selectedWallet, setSelectedWallet] = useState<any>(null);
+  const [unlockPassword, setUnlockPassword] = useState('');
+  const [unlockedWallet, setUnlockedWallet] = useState<any>(null);
+  const [actionWallet, setActionWallet] = useState<any>(null);
 
   // Convex hooks
+  // For testing: use test address if no wallet connected
+  const queryAddress = address || '0x0000000000000000000000000000000000000001';
   const userWallets = useQuery(api.wallets.getUserWallets, {
-    userId: address || '',
+    userId: queryAddress,
   });
   const storeWallet = useMutation(api.wallets.storeWallet);
   const updateAIAccess = useMutation(api.wallets.updateAIAccess);
@@ -59,9 +69,11 @@ export function CustodialWalletPanel() {
 
   // Handle wallet creation
   const handleCreateWallet = useCallback(async () => {
+    // For testing: use a test address if no wallet connected
+    const userAddress = address || '0x0000000000000000000000000000000000000001';
+    
     if (!address) {
-      toast.error('Please connect your wallet first');
-      return;
+      console.log('Using test address for custodial wallet creation');
     }
 
     if (password !== confirmPassword) {
@@ -81,7 +93,7 @@ export function CustodialWalletPanel() {
       
       // Store encrypted wallet in Convex
       await storeWallet({
-        userId: address.toLowerCase(),
+        userId: userAddress.toLowerCase(),
         walletId: wallet.id,
         address: wallet.address,
         encryptedKey: wallet.encryptedKey,
@@ -91,6 +103,7 @@ export function CustodialWalletPanel() {
         keyHash: wallet.keyHash,
         type: wallet.metadata.type,
         label: walletLabel || undefined,
+        walletName: walletName || undefined,
       });
 
       setGeneratedMnemonic(mnemonic);
@@ -100,18 +113,21 @@ export function CustodialWalletPanel() {
       setPassword('');
       setConfirmPassword('');
       setWalletLabel('');
+      setWalletName('');
     } catch (error: any) {
       toast.error(error.message || 'Failed to create wallet');
     } finally {
       setIsCreating(false);
     }
-  }, [address, password, confirmPassword, passwordValidation, walletLabel, storeWallet]);
+  }, [address, password, confirmPassword, passwordValidation, walletLabel, walletName, storeWallet]);
 
   // Handle wallet import
   const handleImportWallet = useCallback(async () => {
+    // For testing: use a test address if no wallet connected
+    const userAddress = address || '0x0000000000000000000000000000000000000001';
+    
     if (!address) {
-      toast.error('Please connect your wallet first');
-      return;
+      console.log('Using test address for wallet import');
     }
 
     if (!privateKeyInput) {
@@ -136,7 +152,7 @@ export function CustodialWalletPanel() {
       
       // Store encrypted wallet in Convex
       await storeWallet({
-        userId: address.toLowerCase(),
+        userId: userAddress.toLowerCase(),
         walletId: wallet.id,
         address: wallet.address,
         encryptedKey: wallet.encryptedKey,
@@ -146,6 +162,7 @@ export function CustodialWalletPanel() {
         keyHash: wallet.keyHash,
         type: wallet.metadata.type,
         label: walletLabel || undefined,
+        walletName: walletName || undefined,
       });
 
       toast.success('Wallet imported successfully!');
@@ -156,6 +173,7 @@ export function CustodialWalletPanel() {
       setConfirmPassword('');
       setPrivateKeyInput('');
       setWalletLabel('');
+      setWalletName('');
     } catch (error: any) {
       toast.error(error.message || 'Failed to import wallet');
     } finally {
@@ -243,7 +261,9 @@ export function CustodialWalletPanel() {
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium">{wallet.label || 'Custodial Wallet'}</span>
+                          <span className="font-medium">
+                          {wallet.fullWalletName || wallet.label || 'Custodial Wallet'}
+                        </span>
                           <span className={cn(
                             "px-2 py-0.5 text-xs rounded-full",
                             wallet.type === 'generated' 
@@ -254,16 +274,22 @@ export function CustodialWalletPanel() {
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <code className="text-xs text-muted-foreground">
+                          <code className="text-xs font-mono bg-muted px-2 py-1 rounded">
                             {wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}
                           </code>
                           <button
                             onClick={() => copyAddress(wallet.address)}
                             className="p-1 hover:bg-muted rounded"
+                            title="Copy address"
                           >
                             <Copy weight="regular" size={14} />
                           </button>
                         </div>
+                        {wallet.fullWalletName && (
+                          <div className="text-xs text-primary font-medium mt-1">
+                            {wallet.fullWalletName}
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         {wallet.aiAccess.enabled && (
@@ -281,6 +307,29 @@ export function CustodialWalletPanel() {
                       </div>
                     </div>
 
+                    {/* Action Buttons */}
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        onClick={() => setActionWallet({
+                          ...wallet,
+                          userId: queryAddress, // Pass the user ID for the wallet
+                        })}
+                        className="flex-1 py-2 px-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                      >
+                        <PaperPlaneRight size={16} />
+                        Send
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(wallet.address);
+                          toast.success('Address copied!');
+                        }}
+                        className="px-3 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <Copy size={16} />
+                      </button>
+                    </div>
+
                     {/* AI Access Settings */}
                     <div className="mt-3 p-3 bg-muted/50 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
@@ -289,7 +338,7 @@ export function CustodialWalletPanel() {
                           onClick={() => setSelectedWallet(wallet)}
                           className="p-1 hover:bg-white rounded"
                         >
-                          <Settings weight="regular" size={16} />
+                          <Gear weight="regular" size={16} />
                         </button>
                       </div>
                       <div className="text-xs space-y-1">
@@ -323,17 +372,36 @@ export function CustodialWalletPanel() {
           <div className="space-y-4">
             {!generatedMnemonic ? (
               <>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Wallet Label (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={walletLabel}
-                    onChange={(e) => setWalletLabel(e.target.value)}
-                    placeholder="e.g., AI Trading Wallet"
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Wallet Name (Required)
+                    </label>
+                    <input
+                      type="text"
+                      value={walletName}
+                      onChange={(e) => setWalletName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                      placeholder="e.g., trading"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      maxLength={20}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Letters, numbers, hyphens only
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Display Label (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={walletLabel}
+                      onChange={(e) => setWalletLabel(e.target.value)}
+                      placeholder="e.g., AI Trading Wallet"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -409,10 +477,10 @@ export function CustodialWalletPanel() {
 
                 <button
                   onClick={handleCreateWallet}
-                  disabled={isCreating || !passwordValidation.isValid || password !== confirmPassword}
+                  disabled={isCreating || !passwordValidation.isValid || password !== confirmPassword || !walletName}
                   className={cn(
                     "w-full py-3 rounded-lg font-medium transition-all",
-                    isCreating || !passwordValidation.isValid || password !== confirmPassword
+                    isCreating || !passwordValidation.isValid || password !== confirmPassword || !walletName
                       ? "bg-muted text-muted-foreground cursor-not-allowed"
                       : "bg-primary text-white hover:bg-primary/90"
                   )}
@@ -493,17 +561,36 @@ export function CustodialWalletPanel() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Wallet Label (Optional)
-              </label>
-              <input
-                type="text"
-                value={walletLabel}
-                onChange={(e) => setWalletLabel(e.target.value)}
-                placeholder="e.g., Imported Trading Wallet"
-                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Wallet Name (Required)
+                </label>
+                <input
+                  type="text"
+                  value={walletName}
+                  onChange={(e) => setWalletName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  placeholder="e.g., imported"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  maxLength={20}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Letters, numbers, hyphens only
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Display Label (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={walletLabel}
+                  onChange={(e) => setWalletLabel(e.target.value)}
+                  placeholder="e.g., Imported Trading Wallet"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
             </div>
 
             <div>
@@ -534,10 +621,10 @@ export function CustodialWalletPanel() {
 
             <button
               onClick={handleImportWallet}
-              disabled={isCreating || !passwordValidation.isValid || password !== confirmPassword || !privateKeyInput}
+              disabled={isCreating || !passwordValidation.isValid || password !== confirmPassword || !privateKeyInput || !walletName}
               className={cn(
                 "w-full py-3 rounded-lg font-medium transition-all",
-                isCreating || !passwordValidation.isValid || password !== confirmPassword || !privateKeyInput
+                isCreating || !passwordValidation.isValid || password !== confirmPassword || !privateKeyInput || !walletName
                   ? "bg-muted text-muted-foreground cursor-not-allowed"
                   : "bg-primary text-white hover:bg-primary/90"
               )}
@@ -547,6 +634,14 @@ export function CustodialWalletPanel() {
           </div>
         )}
       </div>
+      
+      {/* Action Modal */}
+      {actionWallet && (
+        <CustodialWalletActions
+          wallet={actionWallet}
+          onClose={() => setActionWallet(null)}
+        />
+      )}
     </div>
   );
 }

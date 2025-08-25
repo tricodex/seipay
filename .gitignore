@@ -9,6 +9,8 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+slides/
+proj.md
 
 # testing
 /coverage
@@ -42,3 +44,10 @@ next-env.d.ts
 
 # Claude Code configuration
 CLAUDE.md
+
+# Test files - NEVER commit these
+test-wallet.json
+scripts/test-wallet.js
+
+notes.txt
+DEPLOYMENT.md

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { LottieAnimation } from '@/components/animations/LottieAnimation';
 import { X, CheckCircle } from '@phosphor-icons/react';
 import { formatAddress, formatSei } from '@/lib/utils';
+import { getExplorerUrl } from '@/lib/sei/config';
 import TigerAnimation from '../../../public/Tiger.json';
 
 interface PaymentSuccessProps {
@@ -88,7 +89,7 @@ export function PaymentSuccess({
             {txHash && (
               <div className="pt-2">
                 <a
-                  href={`https://seitrace.com/tx/${txHash}`}
+                  href={getExplorerUrl(txHash, 'tx')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:text-accent transition-colors underline"

@@ -21,7 +21,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/seipay.png",
+    shortcut: "/seipay.png",
     apple: "/seipay.png",
+    other: {
+      rel: "apple-touch-icon-precomposed",
+      url: "/seipay.png",
+    },
   },
 };
 
@@ -32,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

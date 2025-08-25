@@ -1,4 +1,4 @@
-import { createConfig, http } from 'wagmi';
+import { createConfig, http, createStorage } from 'wagmi';
 import { Chain } from 'wagmi/chains';
 import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 import {
@@ -82,18 +82,24 @@ const connectors = connectorsForWallets(
 );
 
 // Determine which chain to use based on environment
-const chains = process.env.NEXT_PUBLIC_NETWORK === 'mainnet' 
-  ? [seiMainnet] 
-  : [seiTestnet];
+const isMainnet = process.env.NEXT_PUBLIC_NETWORK === 'mainnet';
+const chains: readonly [Chain, ...Chain[]] = isMainnet 
+  ? [seiMainnet] as const
+  : [seiTestnet] as const;
 
-// Create wagmi config
+// Create wagmi config with storage for persistence
 export const wagmiConfig = createConfig({
   connectors,
-  chains: chains as readonly [Chain, ...Chain[]],
+  chains,
   transports: {
     [seiMainnet.id]: http(SEI_NETWORKS.mainnet.rpcUrls[0]),
     [seiTestnet.id]: http(SEI_NETWORKS.testnet.rpcUrls[0]),
   },
+  storage: createStorage({
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    key: 'seipay-wallet',
+  }),
+  ssr: true,
 });
 
 // Export the default chain

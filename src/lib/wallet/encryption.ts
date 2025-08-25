@@ -18,6 +18,20 @@ const IV_LENGTH = 12; // 96 bits for GCM
 const KEY_LENGTH = 32; // 256 bits
 
 /**
+ * Helper to ensure we have an ArrayBuffer (not SharedArrayBuffer)
+ */
+function toArrayBuffer(uint8Array: Uint8Array): ArrayBuffer {
+  const buffer = uint8Array.buffer;
+  if (buffer instanceof ArrayBuffer) {
+    return buffer.slice(uint8Array.byteOffset, uint8Array.byteOffset + uint8Array.byteLength);
+  }
+  // If it's a SharedArrayBuffer, create a new ArrayBuffer
+  const arrayBuffer = new ArrayBuffer(uint8Array.byteLength);
+  new Uint8Array(arrayBuffer).set(uint8Array);
+  return arrayBuffer;
+}
+
+/**
  * Derives an encryption key from a password using PBKDF2
  * @param password - User's password
  * @param salt - Cryptographic salt
@@ -39,7 +53,7 @@ export async function deriveKey(
   return crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt,
+      salt: toArrayBuffer(salt),
       iterations: PBKDF2_ITERATIONS,
       hash: 'SHA-256',
     },
@@ -77,7 +91,7 @@ export async function encryptPrivateKey(
   const encryptedBuffer = await crypto.subtle.encrypt(
     {
       name: 'AES-GCM',
-      iv,
+      iv: toArrayBuffer(iv),
     },
     key,
     encoder.encode(privateKey)
@@ -131,7 +145,7 @@ export async function decryptPrivateKey(
     const decryptedBuffer = await crypto.subtle.decrypt(
       {
         name: 'AES-GCM',
-        iv,
+        iv: toArrayBuffer(iv),
       },
       key,
       encryptedBuffer
